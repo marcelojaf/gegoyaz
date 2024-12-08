@@ -1,128 +1,890 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Calendário Regional de Atividades - UEB-GO - 2025</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            background-color: #f8f9fa;
-            padding-top: 20px;
+      :root {
+        --royal-blue: #4169e1;
+        --light-beige: #b59e7f;
+        --dark-blue: #1e3c72;
+        --hover-bg: rgba(65, 105, 225, 0.1);
+        --zebra-bg: rgba(181, 158, 127, 0.1);
+      }
+
+      body {
+        background-color: var(--light-beige);
+        font-family: "Arial", sans-serif;
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--royal-blue),
+          var(--dark-blue)
+        );
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+      }
+
+      .last-update {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-align: right;
+        padding-right: 1rem;
+      }
+
+      .month-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+
+      .month-header {
+        background-color: var(--royal-blue);
+        color: white;
+        padding: 1rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .table {
+        margin-bottom: 0;
+      }
+
+      .table thead th {
+        background-color: var(--dark-blue);
+        color: white;
+        border: none;
+      }
+
+      .table tbody tr {
+        cursor: pointer;
+      }
+
+      .table tbody tr:nth-child(even) {
+        background-color: var(--zebra-bg);
+      }
+
+      .table tbody tr:hover {
+        background-color: var(--hover-bg);
+      }
+
+      .table td {
+        vertical-align: middle;
+      }
+
+      @media (max-width: 768px) {
+        .table-responsive {
+          border: none;
         }
-        .month-section {
-            margin-bottom: 40px;
-        }
-        .month-header {
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-        }
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <h1 class="text-center mb-4">Calendário Regional de Atividades - UEB-GO - 2025</h1>
-
-        <!-- Janeiro -->
-        <div class="month-section">
-            <div class="month-header">Janeiro</div>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Data</th>
-                            <th>Evento</th>
-                            <th>Local</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>18 e 19</td>
-                            <td>Curso Preliminar – Presencial<br>Curso Intermediário - Presencial</td>
-                            <td>-</td>
-                        </tr>
-                        <tr>
-                            <td>26</td>
-                            <td>Encontro Regional de Formadores<br>Encontro Nacional de Núcleos Regionais - 1º Semestre</td>
-                            <td>-</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Fevereiro -->
-        <div class="month-section">
-            <div class="month-header">Fevereiro</div>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Data</th>
-                            <th>Evento</th>
-                            <th>Local</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>01</td>
-                            <td>Início das Atividades</td>
-                            <td>Sede Colégio Murilo Braga</td>
-                        </tr>
-                        <tr>
-                            <td>08</td>
-                            <td>Assembleia de Grupo</td>
-                            <td>Sede Colégio Murilo Braga</td>
-                        </tr>
-                        <!-- Adicione mais eventos -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Março -->
-        <div class="month-section">
-            <div class="month-header">Março</div>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Data</th>
-                            <th>Evento</th>
-                            <th>Local</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>01 à 05</td>
-                            <td>Curso Avançado - Presencial</td>
-                            <td>CEPAE - UFG</td>
-                        </tr>
-                        <tr>
-                            <td>15</td>
-                            <td>Congresso Escoteiro Regional</td>
-                            <td>À definir</td>
-                        </tr>
-                        <!-- Adicione mais eventos -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Adicione os meses restantes aqui seguindo o mesmo padrão -->
-
+  </head>
+  <body>
+    <div class="header">
+      <div class="container">
+        <h1 class="text-center">Calendário Regional de Atividades</h1>
+        <h2 class="text-center">UEB-GO - 2025</h2>
+        <h3 class="text-center">Grupo Escoteiro Goyaz</h3>
+        <div class="last-update">Última atualização: 08/12/2024 - 17:00</div>
+      </div>
     </div>
 
-    <script>
-        $(document).ready(function () {
-            console.log("Página carregada com sucesso.");
-        });
-    </script>
-</body>
+    <div class="container">
+      <!-- Janeiro -->
+      <div class="month-card">
+        <div class="month-header">Janeiro</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>18 e 19</td>
+                <td>
+                  Curso Preliminar - Presencial<br />Cursos Intermediário -
+                  Presencial
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>26</td>
+                <td>
+                  Encontro Regional de Formadores<br />Encontro Nacional de
+                  Núcleos Regionais - 1º Semestre
+                </td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Fevereiro -->
+      <div class="month-card">
+        <div class="month-header">Fevereiro</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>01</td>
+                <td>Início das Atividades</td>
+                <td>Sede Colégio Murilo Braga</td>
+              </tr>
+              <tr>
+                <td>08</td>
+                <td>Assembleia de Grupo</td>
+                <td>Sede Colégio Murilo Braga</td>
+              </tr>
+              <tr>
+                <td>8 a 23</td>
+                <td>Março Roxo</td>
+                <td>Descentralizado</td>
+              </tr>
+              <tr>
+                <td>14</td>
+                <td>
+                  Data limite para realização de Assembleia Ordinária de Grupo
+                  para eleição de seu(s) delegado(s).<br />
+                  Data limite para envio a Diretoria Regional da Ata das
+                  Assembleias de Grupo e cópia do Balanço Anual 2024.
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>22</td>
+                <td>Reunião Pais TE</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>22</td>
+                <td>Jantar Festivo TS</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>22</td>
+                <td>Hora do Planeta</td>
+                <td>Descentralizado</td>
+              </tr>
+              <tr>
+                <td>28</td>
+                <td>Reunião Pais Alcateia</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>28</td>
+                <td>
+                  Entrega do Balanço Anual das UELs às respectivas Diretorias
+                  Regionais, com parecer da Comissão Fiscal Local
+                </td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Março -->
+      <div class="month-card">
+        <div class="month-header">Março</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>01 à 05</td>
+                <td>Curso Avançado - Presencial</td>
+                <td>CEPAE - UFG</td>
+              </tr>
+              <tr>
+                <td>12 a 27</td>
+                <td>Semana Escoteira</td>
+                <td>Descentralizado</td>
+              </tr>
+              <tr>
+                <td>08</td>
+                <td>Reunião de Pais TS</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>09</td>
+                <td>Conselho de Grupo</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>15</td>
+                <td>
+                  Divulgação do resultado do Prêmio Grupo Padrão<br />
+                  Entrega do Balanço Anual das Regiões Escoteiras ao Escritório
+                  Nacional<br />
+                  Entrega dos relatórios das Regiões Escoteiras especificando as
+                  atividades comunitárias
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>15</td>
+                <td>Congresso Escoteiro Regional</td>
+                <td>À definir</td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td>Assembleia Escoteira Regional</td>
+                <td>À definir</td>
+              </tr>
+              <tr>
+                <td>22</td>
+                <td>Inter-Alcateias recebendo Lis do Cerrado</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>22</td>
+                <td>Feira de Especialidades TE e TS</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>29</td>
+                <td>Aventura Distrital Escoteira<br />Interclãs</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>29</td>
+                <td>Atividade extra-sede Alcateia</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>29</td>
+                <td>Hora do Planeta/WWF</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Abril -->
+      <div class="month-card">
+        <div class="month-header">Abril</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>04 ou 05</td>
+                <td>Curso Preliminar - Presencial<br />EAD em maio</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>05</td>
+                <td>Lançamento Rifa Anual TE<br />Reunião de Pais TE</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>05</td>
+                <td>Festival de Sorvete TS<br />Dia do Amigo TS</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td>Reunião de Pais Alcateia</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>12 e 13</td>
+                <td>23° CQWS - CQWS HF - Conteste de Radioescotismo</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>12 e 26</td>
+                <td>Semana Escoteira</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>26</td>
+                <td>Educação Escoteira TE e TS</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>18 a 21</td>
+                <td>Acampamento de Grupo</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>19</td>
+                <td>Grande Jogo Aéreo</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>23</td>
+                <td>Dia do Escoteiro</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>26 e 27</td>
+                <td>Vigília Regional Pioneira</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>28</td>
+                <td>Dia do Escoteiro do Ar e Dia da Educação</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Maio -->
+      <div class="month-card">
+        <div class="month-header">Maio</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>01</td>
+                <td>Atividade Regional do Ramo Lobinho</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>05 a 31</td>
+                <td>9º EducAÇÃO ESCOTEIRA</td>
+                <td>Descentralizado</td>
+              </tr>
+              <tr>
+                <td>01 a 04</td>
+                <td>
+                  30° Congresso Nacional Escoteiro - Centenário da UEB<br />
+                  >>> Reunião do Conselho de Administração Nacional<br />
+                  >>> Reunião do Conselho Consultivo<br />
+                  >>> 31ª Reunião Ordinária da Assembleia Nacional<br />
+                  >>> 30° Fórum Nacional de Jovens Líderes<br />
+                  >>> Seminário Nacional de Crescimento<br />
+                  >>> Edição do Prêmio Escoteiros do Brasil de Educação
+                </td>
+                <td>Brasilia-DF</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>FestMães Alcateia</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>Reunião de Pais TE</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>17</td>
+                <td>Inter Tropas TS Recebe Lis do Cerrado</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>17</td>
+                <td>Paintball TE</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>25</td>
+                <td>Conselho de Grupo -- Festa Junina</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>31 a 01</td>
+                <td>Atividade ou Acampamento de Patrulhas TS</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Junho -->
+      <div class="month-card">
+        <div class="month-header">Junho</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>07 a 22</td>
+                <td>34° Mutirão Nacional de Ação Ecológica - MutEco</td>
+                <td>Descentralizado</td>
+              </tr>
+              <tr>
+                <td>07 a 22</td>
+                <td>Mutirão Nacional de Doação de Sangue e cadastro REDOME</td>
+                <td>Descentralizado</td>
+              </tr>
+              <tr>
+                <td>07</td>
+                <td>MutEco TE</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>14</td>
+                <td>Jantar Festivo TE</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>14</td>
+                <td>MutEco TS</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>19</td>
+                <td>Encontro Regional de Dirigentes</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>21</td>
+                <td>Encerramento de Ciclo Alcateia</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>21 e 22</td>
+                <td>Scout's Field Day - Dia de Campo do Radioescotismo</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>22</td>
+                <td>
+                  VII Encontro Regional de Colecionadores Escoteiros de Goiás
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>28</td>
+                <td>Festa Junina Grupo</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>29</td>
+                <td>Desafio Distrital Pioneiro</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Julho -->
+      <div class="month-card">
+        <div class="month-header">Julho</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>05</td>
+                <td>1ª Romaria Escoteira Regional</td>
+                <td>Trindade - GO</td>
+              </tr>
+              <tr>
+                <td>05</td>
+                <td>Encerramento de Ciclo TS</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>06</td>
+                <td>Encontro Nacional de Núcleos Regionais - 2º semestre</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>10 a 14</td>
+                <td>Acampamento de Tropa TE</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>12 a 17</td>
+                <td>Aventura Sênior Nacional</td>
+                <td>Carlópolis-PR</td>
+              </tr>
+              <tr>
+                <td>25/07 a 03/08</td>
+                <td>16º MOOT Escoteiro Mundial</td>
+                <td>Portugal</td>
+              </tr>
+              <tr>
+                <td>26 e 27</td>
+                <td>Curso Técnico de Ramos - Presencial</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Agosto -->
+      <div class="month-card">
+        <div class="month-header">Agosto</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>02</td>
+                <td>Retorno às atividades</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>09</td>
+                <td>
+                  FestPais Alcateia<br />
+                  Reunião de Pais TE<br />
+                  Reunião de Pais TS
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td>Reunião de Pais Alcateia</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>17</td>
+                <td>Conselho de Grupo/Chefes</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>01 a 31</td>
+                <td>8º Dia do Amigo</td>
+                <td>Descentralizado</td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td>Dia do Amigo TE</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>16 e 17</td>
+                <td>Grande Jogo Naval</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>20 e 21</td>
+                <td>Reunião do Conselho de Administração Nacional</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>23</td>
+                <td>Visita Alcateia ao Ipê Amarelo</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>23 e 24</td>
+                <td>
+                  Curso Intermediário - Presencial<br />
+                  Agosto e Setembro - EAD
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>30 a 31</td>
+                <td>
+                  Acampamento Alcateia<br />
+                  ELO Distrital TE
+                </td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Setembro -->
+      <div class="month-card">
+        <div class="month-header">Setembro</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>06</td>
+                <td>
+                  5° Atividade Nacional de Radioescotismo em Echolink e DMR
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>07</td>
+                <td>
+                  Dia do Amigo Alcateia<br />
+                  Inter Tropas visita ao GE Salesiano TS
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>20</td>
+                <td>MutCom TE</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>06 a 21</td>
+                <td>27° Mutirão Nacional de Ação Comunitária - MutCom</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>27 a 28</td>
+                <td>Atividade Regional do Ramo Senior</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>30</td>
+                <td>Divulgação do Calendário Regional 2026</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Outubro -->
+      <div class="month-card">
+        <div class="month-header">Outubro</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>04 e 05</td>
+                <td>
+                  Caçada Nacional do Ramo Lobinho / Acampamentos Regionais de
+                  Lobinhos
+                </td>
+                <td>Descentralizado</td>
+              </tr>
+              <tr>
+                <td>04 e 05</td>
+                <td>
+                  31º ELO Nacional -- Atividades podem acontecer de Agosto a
+                  Novembro
+                </td>
+                <td>Descentralizado</td>
+              </tr>
+              <tr>
+                <td>04</td>
+                <td>Reunião de Pais TE</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>05</td>
+                <td>Encontro Regional de Dirigentes</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>06</td>
+                <td>Encontro Regional de Formadores</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>11</td>
+                <td>Reunião de Pais Alcateia</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td>Conselho de Grupo/Chefes</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>17 e 19</td>
+                <td>
+                  68° Jamboree no Ar/ 29° Jamboree na Internet (JOTA/JOTI)
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>24 e 25</td>
+                <td>Acampamento de Patrulha</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>24 a 26</td>
+                <td>
+                  Acampamento de Tropa TS<br />
+                  Atividade Regional do Ramo Pioneiro
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>25 e 26</td>
+                <td>Reunião do Conselho Consultivo</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Novembro -->
+      <div class="month-card">
+        <div class="month-header">Novembro</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>02</td>
+                <td>Indaba Distrital</td>
+                <td>Lis do Cerrado</td>
+              </tr>
+              <tr>
+                <td>08 e 09</td>
+                <td>Curso Preliminar -- Presencial</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>08</td>
+                <td>MutCom TS</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>08 e 09</td>
+                <td>Reunião do Conselho de Administração Nacional</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>14 a 16</td>
+                <td>Encontro Nacional de Jovens Líderes</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>22 a 23</td>
+                <td>
+                  Acampamento/atividade de Patrulha TS<br />
+                  Atividade Regional do Ramo Escoteiro
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>29</td>
+                <td>
+                  Encerramento de ciclo Alcateia<br />
+                  Encerramento de ciclo TE
+                </td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>30</td>
+                <td>ELO Distrital Ramo Lobinho</td>
+                <td>Goyaz</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Dezembro -->
+      <div class="month-card">
+        <div class="month-header">Dezembro</div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>Local</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>06</td>
+                <td>Encerramento de ciclo TS</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>06</td>
+                <td>Gincana do Grupo</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>07</td>
+                <td>Indaba Grupo</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
