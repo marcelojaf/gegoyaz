@@ -1,0 +1,43 @@
+/* styles.module.css */
+.header {
+  background-color: #004a8d;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  padding: 1rem 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: white !important;
+  text-decoration: none;
+}
+
+.brand:hover {
+  color: white !important;
+}
+
+/* Estilizando os links de navegação */
+.header :global(.nav-link) {
+  color: white !important;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.header :global(.nav-link:hover) {
+  background-color: #1e90ff; /* Azul mais brilhante para hover */
+  color: white !important;
+}
+
+/* Ajuste para o botão do menu mobile */
+.header :global(.navbar-toggler) {
+  border-color: rgba(255,255,255,0.5);
+}
+
+.header :global(.navbar-toggler-icon) {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}

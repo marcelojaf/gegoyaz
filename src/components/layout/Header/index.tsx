@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export function Header() {
   return (
-    <header className={`${styles.header} navbar navbar-expand-lg`}>
+    <header className={`${styles.header} navbar navbar-expand-lg navbar-dark`}>
       <div className="container">
         <Link href="/" className={styles.brand}>
           <Image

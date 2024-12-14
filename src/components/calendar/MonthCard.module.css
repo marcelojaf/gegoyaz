@@ -1,0 +1,50 @@
+/* MonthCard.module.css */
+.monthCard {
+  margin-bottom: 2rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: white !important;
+}
+
+.monthHeader {
+  background-color: #004a8d !important;
+  color: white;
+  padding: 1rem;
+}
+
+.monthHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.columnHeader {
+  background-color: #e6eef7 !important;
+  color: #004a8d !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: 12px !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+/* Estilos da linha */
+tr.activityRow {
+  cursor: pointer;
+}
+
+/* Hover específico */
+tr.activityRow:hover td {
+  background-color: #e9ecef !important;
+}
+
+.centeredCell {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* Garantindo que a tabela tenha fundo branco */
+.monthCard table {
+  background-color: white !important;
+  margin-bottom: 0 !important;
+}

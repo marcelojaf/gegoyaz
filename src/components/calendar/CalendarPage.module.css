@@ -1,0 +1,5 @@
+.calendarPage {
+  min-height: calc(100vh - 200px);
+  background-color: var(--light-beige);
+  padding: 2rem 0;
+}
