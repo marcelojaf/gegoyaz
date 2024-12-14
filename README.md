@@ -1754,3 +1754,2018 @@ jobs:
       - name: Upload coverage
         uses: codecov/codecov-action@v3
 ```
+## Guia de Contribuição
+
+### Fluxo de Trabalho
+
+```markdown
+### Branches
+- `main` - Produção
+- `develop` - Desenvolvimento
+- `feature/*` - Novas funcionalidades
+- `fix/*` - Correções de bugs
+- `hotfix/*` - Correções urgentes
+- `release/*` - Preparação para release
+
+### Processo de Contribuição
+1. Fork do repositório (para externos)
+2. Criar branch a partir de `develop`
+3. Implementar mudanças
+4. Rodar testes e lint
+5. Criar Pull Request
+6. Code Review
+7. Merge na `develop`
+
+### Padrões de Commit
+Seguimos o Conventional Commits:
+
+- `feat`: Nova funcionalidade
+- `fix`: Correção de bug
+- `docs`: Documentação
+- `style`: Formatação
+- `refactor`: Refatoração
+- `test`: Testes
+- `chore`: Tarefas de build, etc
+
+Exemplo:
+```bash
+git commit -m "feat: adiciona componente de calendário"
+git commit -m "fix: corrige integração com Instagram"
+```
+
+## Documentação de Testes
+
+### Setup de Testes
+
+```typescript
+// jest.config.js
+const nextJest = require('next/jest');
+
+const createJestConfig = nextJest({
+  dir: './',
+});
+
+const customJestConfig = {
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  moduleNameMapper: {
+    '^@/components/(.*)$': '<rootDir>/src/components/$1',
+    '^@/lib/(.*)$': '<rootDir>/src/lib/$1',
+  },
+  testEnvironment: 'jest-environment-jsdom',
+};
+
+module.exports = createJestConfig(customJestConfig);
+
+// jest.setup.js
+import '@testing-library/jest-dom';
+```
+
+### Estrutura de Testes
+
+```typescript
+// __tests__/components/EventCard.test.tsx
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { EventCard } from '@/components/events/EventCard';
+
+describe('EventCard', () => {
+  const mockEvent = {
+    id: '1',
+    title: 'Acampamento de Grupo',
+    description: 'Descrição do evento',
+    startDate: '2024-12-20',
+    location: 'Sede do Grupo',
+    type: 'grupo' as const,
+    status: 'upcoming' as const,
+  };
+
+  it('renderiza o título do evento', () => {
+    render(<EventCard event={mockEvent} />);
+    expect(screen.getByText(mockEvent.title)).toBeInTheDocument();
+  });
+
+  it('exibe o botão de inscrição para eventos futuros', () => {
+    const onRegister = jest.fn();
+    render(<EventCard event={mockEvent} onRegister={onRegister} />);
+    
+    const button = screen.getByText('Inscrever-se');
+    userEvent.click(button);
+    
+    expect(onRegister).toHaveBeenCalledWith(mockEvent.id);
+  });
+});
+
+// __tests__/hooks/useInstagram.test.ts
+import { renderHook } from '@testing-library/react-hooks';
+import { useInstagram } from '@/hooks/useInstagram';
+
+describe('useInstagram', () => {
+  it('retorna posts do Instagram', async () => {
+    const { result, waitForNextUpdate } = renderHook(() => useInstagram());
+    
+    await waitForNextUpdate();
+    
+    expect(result.current.posts).toBeDefined();
+    expect(result.current.isLoading).toBe(false);
+  });
+});
+```
+
+### Testes de Integração
+
+```typescript
+// cypress/integration/home.spec.ts
+describe('Página Inicial', () => {
+  beforeEach(() => {
+    cy.visit('/');
+  });
+
+  it('carrega o feed do Instagram', () => {
+    cy.get('[data-testid="instagram-feed"]')
+      .should('be.visible')
+      .find('.instagram-post')
+      .should('have.length.gt', 0);
+  });
+
+  it('exibe eventos próximos', () => {
+    cy.get('[data-testid="events-section"]')
+      .should('be.visible')
+      .find('.event-card')
+      .should('have.length.gt', 0);
+  });
+});
+
+// cypress/integration/navigation.spec.ts
+describe('Navegação', () => {
+  it('navega entre as páginas', () => {
+    cy.visit('/');
+    
+    cy.get('nav')
+      .contains('Eventos')
+      .click();
+    
+    cy.url()
+      .should('include', '/eventos');
+    
+    cy.get('h1')
+      .should('contain', 'Eventos');
+  });
+});
+```
+
+### Scripts de Teste
+
+```json
+{
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "cypress run",
+    "test:e2e:dev": "cypress open"
+  }
+}
+```
+
+### GitHub Actions para Testes
+
+```yaml
+# .github/workflows/tests.yml
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run lint
+      run: npm run lint
+      
+    - name: Run tests
+      run: npm test
+      
+    - name: Run e2e tests
+      run: npm run test:e2e
+      
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+```
+
+## Guia de Segurança e Boas Práticas
+
+### Segurança
+
+```typescript
+// middleware.ts
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  // Headers de Segurança
+  const headers = new Headers(request.headers);
+  
+  // Previne clickjacking
+  headers.set('X-Frame-Options', 'DENY');
+  
+  // Previne MIME type sniffing
+  headers.set('X-Content-Type-Options', 'nosniff');
+  
+  // Política de segurança de conteúdo
+  headers.set('Content-Security-Policy', `
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: https://*.cdninstagram.com;
+    font-src 'self';
+    connect-src 'self' https://api.instagram.com;
+  `);
+  
+  return NextResponse.next({
+    request: {
+      headers,
+    },
+  });
+}
+
+// lib/security/validation.ts
+import { z } from 'zod';
+
+export const eventSchema = z.object({
+  title: z.string().min(3).max(100),
+  description: z.string().min(10).max(1000),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime().optional(),
+  location: z.string().min(3).max(200),
+  type: z.enum(['alcateia', 'escoteiro', 'senior', 'pioneiro', 'grupo']),
+  status: z.enum(['upcoming', 'ongoing', 'completed'])
+});
+```
+
+### Sanitização de Dados
+
+```typescript
+// lib/security/sanitization.ts
+import DOMPurify from 'dompurify';
+
+export function sanitizeHtml(content: string): string {
+  return DOMPurify.sanitize(content, {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li'],
+    ALLOWED_ATTR: []
+  });
+}
+
+// Uso em componentes
+function NewsContent({ content }: { content: string }) {
+  const sanitizedContent = sanitizeHtml(content);
+  return <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />;
+}
+```
+
+### Rate Limiting
+
+```typescript
+// pages/api/_middleware.ts
+import rateLimit from 'express-rate-limit';
+import slowDown from 'express-slow-down';
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100 // limite por IP
+});
+
+const speedLimiter = slowDown({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  delayAfter: 50, // permitir 50 requisições por 15 minutos
+  delayMs: 500 // adicionar 500ms de delay por requisição
+});
+
+export { limiter, speedLimiter };
+```
+
+### Logs e Monitoramento
+
+```typescript
+// lib/monitoring/logger.ts
+type LogLevel = 'info' | 'warn' | 'error';
+
+interface LogEntry {
+  level: LogLevel;
+  message: string;
+  timestamp: string;
+  data?: unknown;
+}
+
+class Logger {
+  private static instance: Logger;
+  
+  private constructor() {}
+  
+  static getInstance(): Logger {
+    if (!Logger.instance) {
+      Logger.instance = new Logger();
+    }
+    return Logger.instance;
+  }
+
+  log(level: LogLevel, message: string, data?: unknown) {
+    const entry: LogEntry = {
+      level,
+      message,
+      timestamp: new Date().toISOString(),
+      data
+    };
+
+    if (process.env.NODE_ENV === 'production') {
+      // Enviar para serviço de logging
+      this.sendToLoggingService(entry);
+    } else {
+      console.log(JSON.stringify(entry, null, 2));
+    }
+  }
+
+  private sendToLoggingService(entry: LogEntry) {
+    // Implementar integração com serviço de logging
+  }
+}
+
+export const logger = Logger.getInstance();
+```
+
+### Backup e Recuperação
+
+```typescript
+// scripts/backup.ts
+import { exec } from 'child_process';
+import { uploadToAzure } from './azure-storage';
+
+async function createBackup() {
+  const date = new Date().toISOString().split('T')[0];
+  const filename = `backup-${date}.tar.gz`;
+
+  try {
+    // Backup de arquivos
+    await exec(`tar -czf ${filename} ./public/uploads`);
+    
+    // Upload para Azure Storage
+    await uploadToAzure(filename, 'backups');
+    
+    console.log(`Backup created successfully: ${filename}`);
+  } catch (error) {
+    console.error('Backup failed:', error);
+  }
+}
+
+// Executar backup diário
+if (require.main === module) {
+  createBackup();
+}
+```
+
+### Checklist de Segurança
+
+```markdown
+## Checklist de Segurança
+
+### Frontend
+- [ ] CSP configurado
+- [ ] Headers de segurança
+- [ ] Sanitização de inputs
+- [ ] Validação de dados
+- [ ] HTTPS forçado
+- [ ] Cookies seguros
+
+### Dados
+- [ ] Backup automático
+- [ ] Encriptação em trânsito
+- [ ] Logs de auditoria
+- [ ] Política de retenção
+
+### Acesso
+- [ ] Autenticação forte
+- [ ] Rate limiting
+- [ ] Sessões seguras
+- [ ] CORS configurado
+
+### Código
+- [ ] Dependências atualizadas
+- [ ] Análise estática
+- [ ] Revisão de código
+- [ ] Testes de segurança
+```
+
+## Apêndices e Recursos Adicionais
+
+### A. Cores e Identidade Visual
+
+```markdown
+### Escoteiros do Brasil
+Conforme manual de identidade visual:
+
+- Verde (foresta): #00853e
+- Amarelo (sol): #fff200
+- Azul (água): #00accd
+- Azul escuro (estrela): #004a8d
+
+### GE Goyaz
+Cor principal:
+- Azul Royal: #0047AB
+
+Para detalhes completos de cores, consultar a seção de Guia de Estilo.
+```
+
+### B. Links Úteis
+
+```markdown
+### Documentação Oficial
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Documentation](https://reactjs.org/docs)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs)
+- [Instagram Basic Display API](https://developers.facebook.com/docs/instagram-basic-display-api)
+
+### Escoteiros
+- [Escoteiros do Brasil](https://www.escoteiros.org.br)
+- [Manual de Identidade Visual](link-do-manual)
+- [PAXTU](https://paxtu.escoteiros.org.br)
+
+### Ferramentas Recomendadas
+- [VS Code](https://code.visualstudio.com)
+- [Postman](https://www.postman.com)
+- [GitHub Desktop](https://desktop.github.com)
+```
+
+### C. Troubleshooting Comum
+
+```markdown
+### Problemas Comuns
+
+1. **Build falha com erro de TypeScript**
+   ```bash
+   # Solução
+   npm run type-check
+   # Verificar erros e corrigir tipos
+   ```
+
+2. **Instagram API não carrega**
+   ```bash
+   # Verificar
+   - Token válido
+   - Rate limits
+   - Configuração de CORS
+   ```
+
+3. **Imagens não aparecem**
+   ```bash
+   # Verificar
+   - Paths corretos
+   - Next.js Image config
+   - Permissões do CDN
+   ```
+
+4. **Problemas de CORS**
+   ```typescript
+   // next.config.js
+   module.exports = {
+     async headers() {
+       return [
+         {
+           source: '/api/:path*',
+           headers: [
+             { key: 'Access-Control-Allow-Origin', value: '*' },
+           ],
+         },
+       ]
+     },
+   }
+   ```
+```
+
+### D. Templates e Snippets
+
+```typescript
+// templates/ComponentTemplate.tsx
+import React from 'react';
+import styles from './ComponentName.module.css';
+
+interface ComponentNameProps {
+  // Props here
+}
+
+export const ComponentName: React.FC<ComponentNameProps> = ({ ...props }) => {
+  return (
+    <div className={styles.container}>
+      {/* Component content */}
+    </div>
+  );
+};
+
+// templates/PageTemplate.tsx
+import { NextPage } from 'next';
+import Head from 'next/head';
+import { Layout } from '@/components/layout';
+
+interface PageProps {
+  // Props here
+}
+
+const PageName: NextPage<PageProps> = ({ ...props }) => {
+  return (
+    <Layout>
+      <Head>
+        <title>Page Title | GE Goyaz</title>
+      </Head>
+      <main>
+        {/* Page content */}
+      </main>
+    </Layout>
+  );
+};
+
+export default PageName;
+```
+
+### E. Lista de VS Code Extensions
+
+```json
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "dsznajder.es7-react-js-snippets",
+    "formulahendry.auto-rename-tag",
+    "streetsidesoftware.code-spell-checker",
+    "streetsidesoftware.code-spell-checker-portuguese-brazilian",
+    "eamodio.gitlens",
+    "ms-vsliveshare.vsliveshare",
+    "christian-kohler.path-intellisense",
+    "bradlc.vscode-tailwindcss"
+  ]
+}
+```
+
+### F. Checklists
+
+```markdown
+### Checklist de PR
+- [ ] Código segue padrões do projeto
+- [ ] Testes adicionados/atualizados
+- [ ] Documentação atualizada
+- [ ] Build passa localmente
+- [ ] Lint passa sem erros
+- [ ] Revisão de código feita
+
+### Checklist de Feature
+- [ ] Especificação clara
+- [ ] Design/mockups aprovados
+- [ ] Testes planejados
+- [ ] Dependências identificadas
+- [ ] Riscos avaliados
+- [ ] Plano de rollback
+
+### Checklist de Release
+- [ ] Testes passando
+- [ ] Documentação atualizada
+- [ ] Changelog atualizado
+- [ ] Versão taggeada
+- [ ] Backup realizado
+- [ ] Stakeholders notificados
+```
+
+## Documentação da API (Futura)
+
+### Estrutura da API
+
+```csharp
+// Estrutura base do projeto ASP.NET
+GEGoyaz.API/
+├── Controllers/
+│   ├── NewsController.cs
+│   ├── EventsController.cs
+│   └── UserController.cs
+├── Models/
+│   ├── News.cs
+│   ├── Event.cs
+│   └── User.cs
+├── Services/
+│   ├── NewsService.cs
+│   ├── EventService.cs
+│   └── AuthService.cs
+└── Data/
+    ├── AppDbContext.cs
+    └── Repositories/
+        ├── NewsRepository.cs
+        └── EventRepository.cs
+```
+
+### Endpoints Planejados
+
+```markdown
+### Notícias
+```typescript
+// GET /api/news
+// Lista todas as notícias
+interface ListNewsResponse {
+  items: NewsItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+// GET /api/news/{id}
+// Obtém uma notícia específica
+interface NewsItem {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+  author: string;
+  tags: string[];
+  image?: {
+    url: string;
+    alt: string;
+  };
+}
+
+// POST /api/news
+// Cria uma nova notícia
+interface CreateNewsRequest {
+  title: string;
+  content: string;
+  tags: string[];
+  image?: {
+    data: string; // Base64
+    alt: string;
+  };
+}
+```
+
+### Eventos
+```typescript
+// GET /api/events
+// Lista todos os eventos
+interface ListEventsResponse {
+  items: Event[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+// GET /api/events/{id}
+// Obtém um evento específico
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate?: string;
+  location: string;
+  type: EventType;
+  status: EventStatus;
+  capacity?: number;
+  registrations?: number;
+}
+
+// POST /api/events/{id}/register
+// Registra participação em um evento
+interface EventRegistration {
+  eventId: string;
+  userId: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+}
+```
+
+### Autenticação (Futura)
+
+```typescript
+// POST /api/auth/login
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: UserRole;
+  };
+}
+
+// POST /api/auth/refresh
+interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+// GET /api/auth/me
+interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  section: string;
+  progressions: Progression[];
+  badges: Badge[];
+}
+```
+
+### Exemplos de Implementação
+
+```csharp
+// Controllers/NewsController.cs
+[ApiController]
+[Route("api/[controller]")]
+public class NewsController : ControllerBase
+{
+    private readonly INewsService _newsService;
+
+    public NewsController(INewsService newsService)
+    {
+        _newsService = newsService;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<ListNewsResponse>> GetNews(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? tag = null)
+    {
+        var result = await _newsService.GetNewsAsync(page, pageSize, tag);
+        return Ok(result);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<NewsItem>> CreateNews(
+        [FromBody] CreateNewsRequest request)
+    {
+        var news = await _newsService.CreateNewsAsync(request);
+        return CreatedAtAction(
+            nameof(GetNews),
+            new { id = news.Id },
+            news);
+    }
+}
+
+// Services/NewsService.cs
+public class NewsService : INewsService
+{
+    private readonly INewsRepository _newsRepository;
+    private readonly IStorageService _storageService;
+
+    public async Task<NewsItem> CreateNewsAsync(CreateNewsRequest request)
+    {
+        // Validação
+        if (string.IsNullOrEmpty(request.Title))
+            throw new BadRequestException("Title is required");
+
+        // Processamento de imagem
+        string? imageUrl = null;
+        if (request.Image != null)
+        {
+            imageUrl = await _storageService.UploadImageAsync(
+                request.Image.Data,
+                "news-images"
+            );
+        }
+
+        // Criação da notícia
+        var news = new NewsItem
+        {
+            Id = Guid.NewGuid().ToString(),
+            Title = request.Title,
+            Content = request.Content,
+            Date = DateTime.UtcNow,
+            Tags = request.Tags,
+            Image = imageUrl != null
+                ? new ImageInfo { Url = imageUrl, Alt = request.Image.Alt }
+                : null
+        };
+
+        // Persistência
+        await _newsRepository.CreateAsync(news);
+
+        return news;
+    }
+}
+```
+
+### Swagger Documentation
+
+```yaml
+# swagger.yaml
+openapi: 3.0.0
+info:
+  title: GE Goyaz API
+  version: '1.0'
+  description: API do Grupo Escoteiro Goyaz
+
+paths:
+  /api/news:
+    get:
+      summary: Lista notícias
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de notícias
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListNewsResponse'
+    post:
+      summary: Cria uma notícia
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNewsRequest'
+      responses:
+        '201':
+          description: Notícia criada
+```
+
+## Guia de Performance e Otimizações
+
+### 1. Otimizações de Imagem
+
+```typescript
+// next.config.js
+module.exports = {
+  images: {
+    domains: [
+      'cdninstagram.com',
+      'scontent.cdninstagram.com',
+      'storage.googleapis.com'
+    ],
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+}
+
+// components/OptimizedImage.tsx
+interface OptimizedImageProps {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  priority?: boolean;
+}
+
+export const OptimizedImage: React.FC<OptimizedImageProps> = ({
+  src,
+  alt,
+  width,
+  height,
+  priority = false
+}) => {
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      priority={priority}
+      loading={priority ? 'eager' : 'lazy'}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      placeholder="blur"
+      blurDataURL={`data:image/svg+xml;base64,...`}
+    />
+  );
+};
+```
+
+### 2. Code Splitting e Lazy Loading
+
+```typescript
+// pages/eventos.tsx
+import dynamic from 'next/dynamic';
+
+const EventCalendar = dynamic(
+  () => import('@/components/events/EventCalendar'),
+  {
+    loading: () => <EventCalendarSkeleton />,
+    ssr: false
+  }
+);
+
+const InstagramFeed = dynamic(
+  () => import('@/components/instagram/InstagramFeed'),
+  {
+    loading: () => <InstagramFeedSkeleton />,
+    ssr: false
+  }
+);
+```
+
+### 3. Caching
+
+```typescript
+// lib/cache/redis.ts
+import { Redis } from 'ioredis';
+
+class CacheService {
+  private redis: Redis;
+  private readonly DEFAULT_TTL = 3600; // 1 hora
+
+  constructor() {
+    this.redis = new Redis({
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
+      password: process.env.REDIS_PASSWORD
+    });
+  }
+
+  async get<T>(key: string): Promise<T | null> {
+    const data = await this.redis.get(key);
+    return data ? JSON.parse(data) : null;
+  }
+
+  async set(key: string, value: unknown, ttl = this.DEFAULT_TTL): Promise<void> {
+    await this.redis.set(key, JSON.stringify(value), 'EX', ttl);
+  }
+
+  async delete(key: string): Promise<void> {
+    await this.redis.del(key);
+  }
+}
+
+// Uso em API routes
+import { CacheService } from '@/lib/cache/redis';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const cache = new CacheService();
+  const cacheKey = `events:${req.query.page}`;
+
+  // Tentar cache primeiro
+  const cachedData = await cache.get(cacheKey);
+  if (cachedData) {
+    return res.json(cachedData);
+  }
+
+  // Se não houver cache, buscar dados e cachear
+  const data = await fetchEvents(req.query);
+  await cache.set(cacheKey, data);
+  
+  res.json(data);
+}
+```
+
+### 4. Performance Monitoring
+
+```typescript
+// lib/monitoring/performance.ts
+export const performanceMetrics = {
+  getFCP: () => {
+    const paint = performance.getEntriesByType('paint')
+      .find(entry => entry.name === 'first-contentful-paint');
+    return paint?.startTime || 0;
+  },
+
+  getLCP: () => {
+    return new Promise(resolve => {
+      new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        const lastEntry = entries[entries.length - 1];
+        resolve(lastEntry.startTime);
+      }).observe({ entryTypes: ['largest-contentful-paint'] });
+    });
+  },
+
+  getTTFB: () => {
+    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    return navigation.responseStart;
+  }
+};
+
+// Uso em componentes
+useEffect(() => {
+  const trackPerformance = async () => {
+    const metrics = {
+      fcp: performanceMetrics.getFCP(),
+      lcp: await performanceMetrics.getLCP(),
+      ttfb: performanceMetrics.getTTFB()
+    };
+
+    // Enviar métricas para analytics
+    trackMetrics(metrics);
+  };
+
+  trackPerformance();
+}, []);
+```
+
+### 5. Bundle Analysis
+
+```json
+// package.json
+{
+  "scripts": {
+    "analyze": "ANALYZE=true next build",
+    "analyze:server": "BUNDLE_ANALYZE=server next build",
+    "analyze:browser": "BUNDLE_ANALYZE=browser next build"
+  }
+}
+```
+
+### 6. Web Vitals
+
+```typescript
+// pages/_app.tsx
+import { useEffect } from 'react';
+import { getCLS, getFID, getLCP } from 'web-vitals';
+
+function reportWebVitals({ id, name, label, value }: any) {
+  // Enviar para Analytics
+  ga('send', 'event', {
+    eventCategory: 'Web Vitals',
+    eventAction: name,
+    eventValue: Math.round(name === 'CLS' ? value * 1000 : value),
+    eventLabel: id,
+    nonInteraction: true,
+  });
+}
+
+export function reportWebVitals(onPerfEntry?: (metric: any) => void): void {
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    getCLS(onPerfEntry);
+    getFID(onPerfEntry);
+    getLCP(onPerfEntry);
+  }
+}
+```
+
+## Exemplos de Implementação Avançada
+
+### 1. Sistema de Notificações
+
+```typescript
+// lib/services/notifications.ts
+interface Notification {
+  id: string;
+  type: 'event' | 'news' | 'system';
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+  link?: string;
+}
+
+export class NotificationService {
+  // Web Push
+  async subscribeToNotifications(subscription: PushSubscription): Promise<void> {
+    await fetch('/api/notifications/subscribe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(subscription),
+    });
+  }
+
+  // Hook para gerenciar notificações
+  const useNotifications = () => {
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [permission, setPermission] = useState<NotificationPermission>('default');
+
+    useEffect(() => {
+      // Verificar permissão
+      if ('Notification' in window) {
+        setPermission(Notification.permission);
+      }
+    }, []);
+
+    const requestPermission = async () => {
+      if ('Notification' in window) {
+        const result = await Notification.requestPermission();
+        setPermission(result);
+      }
+    };
+
+    return {
+      notifications,
+      permission,
+      requestPermission,
+    };
+  };
+}
+```
+
+### 2. Sistema de Eventos Avançado
+
+```typescript
+// components/events/EventScheduler.tsx
+interface EventSchedulerProps {
+  events: Event[];
+  onEventSelect: (event: Event) => void;
+}
+
+export const EventScheduler: React.FC<EventSchedulerProps> = ({
+  events,
+  onEventSelect,
+}) => {
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [view, setView] = useState<'month' | 'week' | 'day'>('month');
+
+  const eventsByDate = useMemo(() => {
+    return events.reduce((acc, event) => {
+      const date = new Date(event.startDate).toISOString().split('T')[0];
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(event);
+      return acc;
+    }, {} as Record<string, Event[]>);
+  }, [events]);
+
+  // Render calendário com eventos
+  return (
+    <div className="event-scheduler">
+      <div className="controls">
+        {/* Controles de navegação */}
+      </div>
+      <div className="calendar">
+        {/* Renderização do calendário */}
+      </div>
+      <div className="event-list">
+        {/* Lista de eventos do dia selecionado */}
+      </div>
+    </div>
+  );
+};
+```
+
+### 3. Sistema de Progressão
+
+```typescript
+// lib/progression/types.ts
+interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  requirements: Requirement[];
+  category: string;
+  section: 'lobinho' | 'escoteiro' | 'senior' | 'pioneiro';
+}
+
+interface Requirement {
+  id: string;
+  description: string;
+  completed: boolean;
+  completedAt?: string;
+  approvedBy?: string;
+}
+
+// components/progression/ProgressionTracker.tsx
+export const ProgressionTracker: React.FC<{
+  userId: string;
+  section: string;
+}> = ({ userId, section }) => {
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  
+  // Lógica de progressão
+  const calculateProgress = (achievement: Achievement) => {
+    const completed = achievement.requirements.filter(r => r.completed).length;
+    return (completed / achievement.requirements.length) * 100;
+  };
+
+  return (
+    <div className="progression-tracker">
+      {achievements.map(achievement => (
+        <div key={achievement.id} className="achievement-card">
+          <h3>{achievement.name}</h3>
+          <ProgressBar value={calculateProgress(achievement)} />
+          <RequirementsList requirements={achievement.requirements} />
+        </div>
+      ))}
+    </div>
+  );
+};
+```
+
+### 4. Sistema de Relatórios
+
+```typescript
+// lib/reports/generator.ts
+interface ReportOptions {
+  startDate: string;
+  endDate: string;
+  type: 'events' | 'attendance' | 'progression' | 'financial';
+  format: 'pdf' | 'excel' | 'csv';
+}
+
+class ReportGenerator {
+  async generateReport(options: ReportOptions): Promise<Buffer> {
+    const data = await this.fetchReportData(options);
+    
+    switch (options.format) {
+      case 'pdf':
+        return this.generatePDF(data);
+      case 'excel':
+        return this.generateExcel(data);
+      case 'csv':
+        return this.generateCSV(data);
+      default:
+        throw new Error('Formato não suportado');
+    }
+  }
+
+  private async fetchReportData(options: ReportOptions) {
+    // Buscar dados conforme tipo de relatório
+    switch (options.type) {
+      case 'events':
+        return this.fetchEventsData(options);
+      case 'attendance':
+        return this.fetchAttendanceData(options);
+      // ... outros tipos
+    }
+  }
+}
+```
+
+### 5. Sistema de Gamificação
+
+```typescript
+// lib/gamification/index.ts
+interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  points: number;
+  icon: string;
+}
+
+interface UserProgress {
+  userId: string;
+  points: number;
+  level: number;
+  achievements: string[]; // IDs dos achievements
+}
+
+class GamificationSystem {
+  private readonly POINTS_PER_LEVEL = 100;
+
+  async awardPoints(userId: string, points: number): Promise<UserProgress> {
+    const progress = await this.getUserProgress(userId);
+    progress.points += points;
+    
+    // Checar novo nível
+    const newLevel = Math.floor(progress.points / this.POINTS_PER_LEVEL);
+    if (newLevel > progress.level) {
+      progress.level = newLevel;
+      await this.onLevelUp(userId, newLevel);
+    }
+
+    await this.saveProgress(progress);
+    return progress;
+  }
+
+  async checkAchievements(userId: string): Promise<Achievement[]> {
+    const progress = await this.getUserProgress(userId);
+    const availableAchievements = await this.getAvailableAchievements();
+    
+    return availableAchievements.filter(achievement => 
+      this.meetsRequirements(progress, achievement)
+    );
+  }
+}
+```
+
+## Guia de Migração de Dados
+
+### 1. Estrutura de Migração
+
+```typescript
+// lib/migrations/types.ts
+interface MigrationConfig {
+  version: string;
+  description: string;
+  up: () => Promise<void>;
+  down: () => Promise<void>;
+}
+
+interface MigrationStatus {
+  version: string;
+  appliedAt: string;
+  success: boolean;
+}
+
+// lib/migrations/migrator.ts
+class Migrator {
+  private readonly migrations: MigrationConfig[];
+
+  constructor(migrations: MigrationConfig[]) {
+    this.migrations = migrations.sort((a, b) => 
+      a.version.localeCompare(b.version)
+    );
+  }
+
+  async migrate(targetVersion?: string): Promise<void> {
+    const applied = await this.getAppliedMigrations();
+    const pending = this.getPendingMigrations(applied);
+
+    for (const migration of pending) {
+      if (targetVersion && migration.version > targetVersion) {
+        break;
+      }
+
+      try {
+        await migration.up();
+        await this.recordMigration(migration);
+      } catch (error) {
+        console.error(`Migration ${migration.version} failed:`, error);
+        throw error;
+      }
+    }
+  }
+}
+```
+
+### 2. Exemplo de Migração
+
+```typescript
+// migrations/001_initial_schema.ts
+export const migration: MigrationConfig = {
+  version: '001',
+  description: 'Criação do esquema inicial',
+  
+  async up() {
+    // Implementar migração
+    await db.execute(`
+      CREATE TABLE users (
+        id VARCHAR(36) PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE events (
+        id VARCHAR(36) PRIMARY KEY,
+        title VARCHAR(200) NOT NULL,
+        description TEXT,
+        start_date TIMESTAMP NOT NULL,
+        end_date TIMESTAMP,
+        location VARCHAR(200),
+        type VARCHAR(50) NOT NULL,
+        status VARCHAR(50) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+  },
+
+  async down() {
+    // Reverter migração
+    await db.execute(`
+      DROP TABLE IF EXISTS events;
+      DROP TABLE IF EXISTS users;
+    `);
+  }
+};
+```
+
+### 3. Scripts de Migração
+
+```typescript
+// scripts/migrate.ts
+import { Migrator } from '../lib/migrations/migrator';
+import * as migrations from '../migrations';
+
+async function runMigrations() {
+  try {
+    const migrator = new Migrator(Object.values(migrations));
+    await migrator.migrate();
+    console.log('Migrations completed successfully');
+  } catch (error) {
+    console.error('Migration failed:', error);
+    process.exit(1);
+  }
+}
+
+// Executar migrações
+if (require.main === module) {
+  runMigrations();
+}
+
+// scripts/seed.ts
+async function seedDatabase() {
+  const seedData = {
+    users: [
+      {
+        id: '1',
+        name: 'Admin',
+        email: 'admin@gegoyaz.org.br'
+      }
+    ],
+    events: [
+      {
+        id: '1',
+        title: 'Acampamento de Grupo',
+        startDate: '2024-12-20'
+      }
+    ]
+  };
+
+  try {
+    await db.transaction(async (trx) => {
+      // Inserir dados
+      await trx('users').insert(seedData.users);
+      await trx('events').insert(seedData.events);
+    });
+    
+    console.log('Seed completed successfully');
+  } catch (error) {
+    console.error('Seed failed:', error);
+  }
+}
+```
+
+### 4. Estratégias de Backup
+
+```typescript
+// lib/backup/strategy.ts
+interface BackupStrategy {
+  create(): Promise<string>; // Retorna URL do backup
+  restore(url: string): Promise<void>;
+}
+
+// Implementação para Azure Storage
+class AzureBackupStrategy implements BackupStrategy {
+  private container: string;
+  private blobService: BlobServiceClient;
+
+  constructor(connectionString: string, container: string) {
+    this.blobService = BlobServiceClient.fromConnectionString(connectionString);
+    this.container = container;
+  }
+
+  async create(): Promise<string> {
+    const timestamp = new Date().toISOString();
+    const filename = `backup-${timestamp}.sql`;
+    
+    // Fazer dump do banco
+    const dump = await this.dumpDatabase();
+    
+    // Upload para Azure
+    const blockBlobClient = this.blobService
+      .getContainerClient(this.container)
+      .getBlockBlobClient(filename);
+    
+    await blockBlobClient.upload(dump, dump.length);
+    
+    return blockBlobClient.url;
+  }
+
+  async restore(url: string): Promise<void> {
+    // Download do backup
+    const backup = await this.downloadBackup(url);
+    
+    // Restaurar banco
+    await this.restoreDatabase(backup);
+  }
+}
+```
+
+### 5. Monitoramento de Migração
+
+```typescript
+// lib/migrations/monitor.ts
+interface MigrationMetrics {
+  startTime: Date;
+  endTime?: Date;
+  duration?: number;
+  recordsProcessed: number;
+  errors: Error[];
+}
+
+class MigrationMonitor {
+  private metrics: Record<string, MigrationMetrics> = {};
+
+  startMigration(version: string): void {
+    this.metrics[version] = {
+      startTime: new Date(),
+      recordsProcessed: 0,
+      errors: []
+    };
+  }
+
+  recordProgress(version: string, count: number): void {
+    this.metrics[version].recordsProcessed += count;
+  }
+
+  recordError(version: string, error: Error): void {
+    this.metrics[version].errors.push(error);
+  }
+
+  endMigration(version: string): void {
+    const migration = this.metrics[version];
+    migration.endTime = new Date();
+    migration.duration = 
+      migration.endTime.getTime() - migration.startTime.getTime();
+    
+    // Enviar métricas para monitoramento
+    this.sendMetrics(version, migration);
+  }
+
+  private async sendMetrics(version: string, metrics: MigrationMetrics): Promise<void> {
+    // Implementar envio de métricas para sistema de monitoramento
+  }
+}
+```
+
+## Integração com Sistemas Escoteiros
+
+### 1. Integração com PAXTU
+
+```typescript
+// lib/integrations/paxtu/types.ts
+interface PAXTUConfig {
+  apiUrl: string;
+  apiKey: string;
+  groupCode: string;
+}
+
+interface PAXTUMember {
+  codigo: string;          // Registro escoteiro
+  nome: string;
+  secao: string;
+  categoria: string;
+  dataIngresso: string;
+  status: 'Ativo' | 'Inativo';
+}
+
+// lib/integrations/paxtu/client.ts
+class PAXTUClient {
+  private config: PAXTUConfig;
+
+  constructor(config: PAXTUConfig) {
+    this.config = config;
+  }
+
+  async getMemberInfo(registro: string): Promise<PAXTUMember> {
+    const response = await fetch(
+      `${this.config.apiUrl}/members/${registro}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'X-Group-Code': this.config.groupCode
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`PAXTU API error: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  async syncMembers(): Promise<void> {
+    // Sincronizar membros do grupo
+    const members = await this.getGroupMembers();
+    await this.updateLocalDatabase(members);
+  }
+}
+```
+
+### 2. Integração com SIGUE
+
+```typescript
+// lib/integrations/sigue/types.ts
+interface SIGUECredentials {
+  username: string;
+  password: string;
+}
+
+interface SIGUEActivity {
+  id: string;
+  name: string;
+  date: string;
+  type: string;
+  participants: string[];
+}
+
+// lib/integrations/sigue/client.ts
+class SIGUEClient {
+  private token: string | null = null;
+
+  async authenticate(credentials: SIGUECredentials): Promise<void> {
+    // Implementar autenticação
+    const response = await fetch('/sigue/auth', {
+      method: 'POST',
+      body: JSON.stringify(credentials)
+    });
+
+    if (!response.ok) {
+      throw new Error('SIGUE authentication failed');
+    }
+
+    const data = await response.json();
+    this.token = data.token;
+  }
+
+  async registerActivity(activity: SIGUEActivity): Promise<void> {
+    if (!this.token) {
+      throw new Error('Not authenticated');
+    }
+
+    await fetch('/sigue/activities', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.token}`
+      },
+      body: JSON.stringify(activity)
+    });
+  }
+}
+```
+
+### 3. Mappa Integration
+
+```typescript
+// lib/integrations/mappa/types.ts
+interface MappaConfig {
+  apiKey: string;
+  groupId: string;
+}
+
+interface Progression {
+  memberId: string;
+  competency: string;
+  status: 'pending' | 'completed';
+  completedAt?: string;
+}
+
+// lib/integrations/mappa/client.ts
+class MappaClient {
+  private config: MappaConfig;
+
+  constructor(config: MappaConfig) {
+    this.config = config;
+  }
+
+  async updateProgression(progression: Progression): Promise<void> {
+    await fetch('/mappa/progression', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.config.apiKey}`,
+        'X-Group-Id': this.config.groupId
+      },
+      body: JSON.stringify(progression)
+    });
+  }
+
+  async syncProgressions(): Promise<void> {
+    // Sincronizar progressões
+    const progressions = await this.fetchProgressions();
+    await this.updateLocalDatabase(progressions);
+  }
+}
+```
+
+### 4. Gestor de Integrações
+
+```typescript
+// lib/integrations/manager.ts
+class IntegrationManager {
+  private paxtu: PAXTUClient;
+  private sigue: SIGUEClient;
+  private mappa: MappaClient;
+
+  constructor() {
+    this.paxtu = new PAXTUClient({
+      apiUrl: process.env.PAXTU_API_URL!,
+      apiKey: process.env.PAXTU_API_KEY!,
+      groupCode: process.env.PAXTU_GROUP_CODE!
+    });
+
+    this.sigue = new SIGUEClient();
+    this.mappa = new MappaClient({
+      apiKey: process.env.MAPPA_API_KEY!,
+      groupId: process.env.MAPPA_GROUP_ID!
+    });
+  }
+
+  async syncAll(): Promise<void> {
+    await Promise.all([
+      this.paxtu.syncMembers(),
+      this.mappa.syncProgressions()
+    ]);
+  }
+
+  async registerActivity(activity: SIGUEActivity): Promise<void> {
+    // Registrar atividade em todos os sistemas necessários
+    await Promise.all([
+      this.sigue.registerActivity(activity),
+      this.updateLocalActivity(activity)
+    ]);
+  }
+}
+```
+
+### 5. Middleware de Sincronização
+
+```typescript
+// middleware/sync.ts
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export async function middleware(request: NextRequest) {
+  // Verificar se precisa sincronizar
+  const lastSync = request.cookies.get('last-sync');
+  const now = Date.now();
+  
+  if (!lastSync || now - parseInt(lastSync) > 24 * 60 * 60 * 1000) {
+    // Sincronizar a cada 24 horas
+    const manager = new IntegrationManager();
+    await manager.syncAll();
+    
+    // Atualizar cookie
+    const response = NextResponse.next();
+    response.cookies.set('last-sync', now.toString());
+    return response;
+  }
+
+  return NextResponse.next();
+}
+```
+
+## Estratégias de Deployment Avançado
+
+### 1. Azure Static Web Apps
+
+```yaml
+# .github/workflows/azure-static-web-apps.yml
+name: Deploy to Azure Static Web Apps
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    name: Build and Deploy
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+
+      - name: Deploy to Azure
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/"
+          output_location: "out"
+          skip_app_build: true
+```
+
+### 2. Azure App Configuration
+
+```typescript
+// lib/config/azure.ts
+import { AppConfigurationClient } from '@azure/app-configuration';
+
+export class ConfigService {
+  private client: AppConfigurationClient;
+
+  constructor() {
+    this.client = new AppConfigurationClient(
+      process.env.AZURE_APP_CONFIG_CONNECTION_STRING!
+    );
+  }
+
+  async getConfig<T>(key: string): Promise<T> {
+    const setting = await this.client.getConfigurationSetting({ key });
+    return JSON.parse(setting.value!);
+  }
+
+  async setConfig<T>(key: string, value: T): Promise<void> {
+    await this.client.setConfigurationSetting({
+      key,
+      value: JSON.stringify(value)
+    });
+  }
+}
+
+// Uso
+const config = new ConfigService();
+const instagramConfig = await config.getConfig('instagram');
+```
+
+### 3. Google Cloud Platform Setup
+
+```yaml
+# app.yaml
+runtime: nodejs18
+service: gegoyaz-web
+
+env_variables:
+  NEXT_PUBLIC_API_URL: "https://api.gegoyaz.org.br"
+  NODE_ENV: "production"
+
+handlers:
+  - url: /.*
+    secure: always
+    redirect_http_response_code: 301
+    script: auto
+
+automatic_scaling:
+  target_cpu_utilization: 0.65
+  min_instances: 1
+  max_instances: 10
+```
+
+### 4. Multi-Environment Setup
+
+```typescript
+// config/environments.ts
+interface Environment {
+  name: string;
+  apiUrl: string;
+  cdnUrl: string;
+  storageUrl: string;
+}
+
+const environments: Record<string, Environment> = {
+  development: {
+    name: 'development',
+    apiUrl: 'http://localhost:3000',
+    cdnUrl: 'http://localhost:3000',
+    storageUrl: 'http://localhost:3000/storage'
+  },
+  staging: {
+    name: 'staging',
+    apiUrl: 'https://staging-api.gegoyaz.org.br',
+    cdnUrl: 'https://staging-cdn.gegoyaz.org.br',
+    storageUrl: 'https://staging-storage.gegoyaz.org.br'
+  },
+  production: {
+    name: 'production',
+    apiUrl: 'https://api.gegoyaz.org.br',
+    cdnUrl: 'https://cdn.gegoyaz.org.br',
+    storageUrl: 'https://storage.gegoyaz.org.br'
+  }
+};
+
+export const currentEnvironment = environments[process.env.NODE_ENV || 'development'];
+```
+
+### 5. Deployment Pipeline
+
+```yaml
+# .github/workflows/deployment.yml
+name: Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Tests
+        run: npm test
+      - name: Run Lint
+        run: npm run lint
+      - name: Type Check
+        run: npm run type-check
+
+  build:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Application
+        run: npm run build
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: .next
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Build
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          
+      - name: Deploy to Azure
+        if: github.ref == 'refs/heads/main'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'gegoyaz'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          
+      - name: Deploy to GCP
+        if: github.ref == 'refs/heads/staging'
+        uses: google-github-actions/deploy-appengine@v1
+        with:
+          credentials: ${{ secrets.GCP_SA_KEY }}
+```
+
+### 6. Monitoramento de Deployment
+
+```typescript
+// lib/monitoring/deployment.ts
+interface DeploymentMetrics {
+  version: string;
+  timestamp: string;
+  duration: number;
+  status: 'success' | 'failure';
+  errors?: Error[];
+}
+
+class DeploymentMonitor {
+  private metrics: DeploymentMetrics;
+  
+  constructor(version: string) {
+    this.metrics = {
+      version,
+      timestamp: new Date().toISOString(),
+      duration: 0,
+      status: 'success'
+    };
+  }
+
+  async trackDeployment(): Promise<void> {
+    const startTime = Date.now();
+    
+    try {
+      // Enviar métricas para Azure Application Insights
+      await this.sendToApplicationInsights({
+        name: 'Deployment Started',
+        properties: {
+          version: this.metrics.version,
+          environment: process.env.NODE_ENV
+        }
+      });
+
+      // Enviar métricas para Google Analytics
+      await this.sendToGoogleAnalytics({
+        eventCategory: 'Deployment',
+        eventAction: 'Started',
+        eventLabel: this.metrics.version
+      });
+      
+    } catch (error) {
+      this.metrics.status = 'failure';
+      this.metrics.errors = [error as Error];
+    } finally {
+      this.metrics.duration = Date.now() - startTime;
+      await this.saveMetrics();
+    }
+  }
+}
+```

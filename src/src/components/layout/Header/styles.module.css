@@ -1,0 +1,19 @@
+.header {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem 0;
+  }
+  
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #0047AB;
+    text-decoration: none;
+  }
+  
+  .brand:hover {
+    color: #003380;
+  }

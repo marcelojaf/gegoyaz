@@ -1,0 +1,71 @@
+/* src/components/layout/Footer/styles.module.css */
+.footer {
+  background-color: #004a8d;
+  color: #fff;
+  padding: 3rem 0 1rem 0;
+  margin-top: 3rem;
+}
+
+.logo {
+  margin-bottom: 1rem;
+}
+
+.info {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.title {
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #fff200;
+}
+
+.links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.links li {
+  margin-bottom: 0.5rem;
+}
+
+.links a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.links a:hover {
+  color: #fff200;
+}
+
+.contact {
+  font-style: normal;
+  line-height: 1.6;
+}
+
+.contact p {
+  margin-bottom: 0.5rem;
+}
+
+.copyright {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.copyright hr {
+  margin: 1rem 0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.escoteirosLogo {
+  margin-bottom: 2rem;
+}
+
+.escoteirosImage {
+  height: auto;
+  max-width: 100%;
+}
